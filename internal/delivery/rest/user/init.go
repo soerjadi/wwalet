@@ -22,5 +22,5 @@ func (h *Handler) RegisterRoutes(r *mux.Router) {
 	r.Use(middleware.OnlyLoggedInUser(h.usecase, h.cfg))
 	r.HandleFunc("/register", rest.HandlerFunc(h.register).Serve).Methods(http.MethodPost)
 	r.HandleFunc("/login", rest.HandlerFunc(h.login).Serve).Methods(http.MethodPost)
-	r.HandleFunc("/update", rest.HandlerFunc(h.update).Serve).Methods(http.MethodPost)
+	r.HandleFunc("/profile", rest.HandlerFunc(h.update).Serve).Methods(http.MethodPost)
 }

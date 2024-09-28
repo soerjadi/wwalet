@@ -13,6 +13,8 @@ type Server struct {
 	Port        string
 	WaitTimeout int
 	BaseURL     string
+	SecretKey   string
+	JwtTTL      int64
 }
 
 type DatabaseConfig struct {

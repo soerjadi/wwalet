@@ -1,6 +1,8 @@
 package util
 
-import "os"
+import (
+	"os"
+)
 
 func GetENV() string {
 	env := os.Getenv("ENV")

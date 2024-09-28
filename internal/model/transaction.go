@@ -3,16 +3,16 @@ package model
 import "time"
 
 type Transaction struct {
-	ID            string    `json:"-"`
-	UserID        string    `json:"user_id"`
-	Status        string    `json:"status"`
-	Type          string    `json:"transaction_type"`
-	Category      string    `json:"-"`
-	Amount        int64     `json:"amount"`
-	Remarks       string    `json:"remarks,omitempty"`
-	BalanceBefore int64     `json:"balance_before"`
-	BalanceAfter  int64     `json:"balance_after"`
-	CreatedAt     time.Time `json:"created_date"`
+	ID            string    `db:"id" json:"-"`
+	UserID        string    `db:"user_id" json:"user_id"`
+	Status        string    `db:"status" json:"status"`
+	Type          string    `db:"type" json:"transaction_type"`
+	Category      string    `db:"category" json:"-"`
+	Amount        int64     `db:"amount" json:"amount"`
+	Remarks       string    `db:"remarks" json:"remarks,omitempty"`
+	BalanceBefore int64     `db:"balance_before" json:"balance_before"`
+	BalanceAfter  int64     `db:"balance_after" json:"balance_after"`
+	CreatedAt     time.Time `db:"created_at" json:"created_date"`
 }
 
 type TransactionRequest struct {
@@ -44,10 +44,10 @@ type TransactionSingle struct {
 	Amount      int64 `json:"amount,omitempty"`
 	AmountTopup int64 `json:"amount_top_up,omitempty"`
 
-	Remarks       string    `json:"remarks,omitempty"`
-	BalanceBefore int64     `json:"balance_before"`
-	BalanceAfter  int64     `json:"balance_after"`
-	CreatedAt     time.Time `json:"created_date"`
+	Remarks       string `json:"remarks,omitempty"`
+	BalanceBefore int64  `json:"balance_before"`
+	BalanceAfter  int64  `json:"balance_after"`
+	CreatedAt     string `json:"created_date"`
 }
 
 type TransactionList struct {
@@ -56,13 +56,13 @@ type TransactionList struct {
 	TransferID string `json:"transfer_id,omitempty"`
 	PaymentID  string `json:"payment_id,omitempty"`
 
-	Status          string    `json:"status"`
-	TransactionType string    `json:"transaction_type"`
-	Amount          int64     `json:"amount"`
-	Remarks         string    `json:"remarks"`
-	BalanceBefore   int64     `json:"balance_before"`
-	BalanceAfter    int64     `json:"balance_after"`
-	CreatedAt       time.Time `json:"created_date"`
+	Status          string `json:"status"`
+	TransactionType string `json:"transaction_type"`
+	Amount          int64  `json:"amount"`
+	Remarks         string `json:"remarks"`
+	BalanceBefore   int64  `json:"balance_before"`
+	BalanceAfter    int64  `json:"balance_after"`
+	CreatedAt       string `json:"created_date"`
 }
 
 const (
@@ -82,7 +82,7 @@ func (t Transaction) TransformSingle() TransactionSingle {
 		Remarks:       t.Remarks,
 		BalanceAfter:  t.BalanceAfter,
 		BalanceBefore: t.BalanceBefore,
-		CreatedAt:     t.CreatedAt,
+		CreatedAt:     t.CreatedAt.Format("2006-09-01 22:20:01"),
 	}
 
 	switch t.Category {
@@ -104,8 +104,25 @@ func (Transaction) TransformList(data []Transaction) []TransactionList {
 	var result []TransactionList
 
 	for _, d := range data {
-		transformData := d.TransformSingle()
-		result = append(result, transformData)
+		transactionList := TransactionList{
+			Status:          d.Status,
+			TransactionType: d.Type,
+			Amount:          d.Amount,
+			BalanceBefore:   d.BalanceBefore,
+			BalanceAfter:    d.BalanceAfter,
+			CreatedAt:       d.CreatedAt.Format("2006-09-01 22:20:21"),
+		}
+
+		switch d.Category {
+		case TRANSACTION_CATEGORY_TRANSFER:
+			transactionList.TransferID = d.ID
+		case TRANSACTION_CATEGORY_TOPUP:
+			transactionList.TopupID = d.ID
+		default:
+			transactionList.PaymentID = d.ID
+		}
+
+		result = append(result, transactionList)
 	}
 
 	return result

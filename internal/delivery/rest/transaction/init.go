@@ -21,10 +21,21 @@ func NewHandler(usecase transaction.Usecase, userUsecase user.Usecase, cfg *conf
 }
 
 func (h *Handler) RegisterRoutes(r *mux.Router) {
-	r.Use(middleware.OnlyLoggedInUser(h.userUsecase, h.cfg))
 	r.Use(mux.CORSMethodMiddleware(r))
-	r.HandleFunc("/topup", rest.HandlerFunc(h.topup).Serve).Methods(http.MethodGet)
-	r.HandleFunc("/transfers", rest.HandlerFunc(h.transfer).Serve).Methods(http.MethodGet)
-	r.HandleFunc("/pay", rest.HandlerFunc(h.pay).Serve).Methods(http.MethodGet)
-	r.HandleFunc("/transactions", rest.HandlerFunc(h.transactionList).Serve).Methods(http.MethodGet)
+
+	topup := r.PathPrefix("/topup").Subrouter()
+	topup.Use(middleware.OnlyLoggedInUser(h.userUsecase, h.cfg))
+	topup.HandleFunc("/", rest.HandlerFunc(h.topup).Serve).Methods(http.MethodPost)
+
+	transfer := r.PathPrefix("/transfers").Subrouter()
+	transfer.Use(middleware.OnlyLoggedInUser(h.userUsecase, h.cfg))
+	transfer.HandleFunc("", rest.HandlerFunc(h.transfer).Serve).Methods(http.MethodPost)
+
+	pay := r.PathPrefix("/pay").Subrouter()
+	pay.Use(middleware.OnlyLoggedInUser(h.userUsecase, h.cfg))
+	pay.HandleFunc("", rest.HandlerFunc(h.pay).Serve).Methods(http.MethodPost)
+
+	trx := r.PathPrefix("/transactions").Subrouter()
+	trx.Use(middleware.OnlyLoggedInUser(h.userUsecase, h.cfg))
+	trx.HandleFunc("", rest.HandlerFunc(h.transactionList).Serve).Methods(http.MethodPost)
 }

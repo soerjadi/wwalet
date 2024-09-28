@@ -39,6 +39,11 @@ func (u transactionUsecase) Topup(ctx context.Context, req model.TransactionRequ
 	req.BalanceAfter = balanceAfter
 
 	result, err := u.repository.InsertTransaction(ctx, req)
+
+	if err != nil {
+		return model.TransactionSingle{}, err
+	}
+
 	transform := result.TransformSingle()
 
 	return transform, nil

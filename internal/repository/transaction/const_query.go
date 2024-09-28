@@ -47,6 +47,7 @@ const (
 		$6,
 		$7,
 		$8,
+		$9,
 		NOW()
 	) RETURNING (
 		id,
@@ -63,8 +64,7 @@ const (
 	`
 
 	updateBalance = `
-	UPDATE INTO 
-		wallets 
+	UPDATE wallets 
 	SET
 		balance = $1,
 		updated_at = NOW()

@@ -7,7 +7,7 @@ type API interface {
 }
 
 type Response struct {
-	Data    interface{} `json:"data"`
-	Message string      `json:"message"`
-	Status  string      `json:"status"`
+	Data    interface{} `json:"result,omitempty"`
+	Message string      `json:"message,omitempty"`
+	Status  string      `json:"status,omitempty"`
 }

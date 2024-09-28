@@ -53,9 +53,27 @@ func (r userRepository) Register(ctx context.Context, req model.UserRegisterRequ
 		return
 	}
 
+	if err = r.createWallet(ctx, user.ID); err != nil {
+		return user, err
+	}
+
 	err = nil
 
 	return
+}
+
+func (r userRepository) createWallet(ctx context.Context, userID string) error {
+	var strID string
+	if err := r.query.createWallet.GetContext(
+		ctx,
+		&strID,
+		str.GenerateUUID(),
+		userID,
+	); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (r userRepository) GetUserByID(ctx context.Context, id string) (model.User, error) {

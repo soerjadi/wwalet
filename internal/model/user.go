@@ -6,15 +6,15 @@ import (
 )
 
 type User struct {
-	ID          string       `json:"id"`
-	FirstName   string       `json:"first_name"`
-	LastName    string       `json:"last_name"`
-	PhoneNumber string       `json:"phone_number"`
-	Address     string       `json:"address"`
-	Pin         string       `json:"pin"`
-	Salt        string       `json:"-"`
-	CreatedAt   time.Time    `json:"created_dated"`
-	UpdatedAt   sql.NullTime `json:"-"`
+	ID          string       `db:"id"`
+	FirstName   string       `db:"first_name"`
+	LastName    string       `db:"last_name"`
+	PhoneNumber string       `db:"phone_number"`
+	Address     string       `db:"address"`
+	Pin         string       `db:"pin"`
+	Salt        string       `db:"salt"`
+	CreatedAt   time.Time    `db:"created_at"`
+	UpdatedAt   sql.NullTime `db:"updated_at"`
 }
 
 type UserRegisterResponse struct {

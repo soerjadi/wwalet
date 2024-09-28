@@ -34,6 +34,8 @@ CREATE TABLE IF NOT EXISTS transactions (
     amount bigint not null,
     remarks text,
     created_at timestamp default current_timestamp,
+    balance_before bigint not null,
+    balance_after bigint not null,
     constraint fk_transactions_users
         foreign key (user_id)
         references users (id)

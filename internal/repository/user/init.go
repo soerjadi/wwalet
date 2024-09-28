@@ -28,6 +28,11 @@ func prepareQueries(db *sqlx.DB) (prepareQuery, error) {
 		return q, err
 	}
 
+	q.createWallet, err = db.Preparex(createWallet)
+	if err != nil {
+		return q, err
+	}
+
 	return q, nil
 }
 

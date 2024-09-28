@@ -23,6 +23,7 @@ func (u userUsecase) Register(ctx context.Context, req model.UserRegisterRequest
 	}
 
 	req.Pin = hashed
+	req.Salt = salt
 
 	res, err := u.repository.Register(ctx, req)
 	if err != nil {

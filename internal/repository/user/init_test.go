@@ -14,6 +14,7 @@ type prepareQueryMock struct {
 	getUserByPhoneNumber *sqlmock.ExpectedPrepare
 	updateUser           *sqlmock.ExpectedPrepare
 	registerUser         *sqlmock.ExpectedPrepare
+	createWallet         *sqlmock.ExpectedPrepare
 }
 
 func expectPrepareMock(mock sqlmock.Sqlmock) prepareQueryMock {
@@ -65,7 +66,7 @@ func expectPrepareMock(mock sqlmock.Sqlmock) prepareQueryMock {
 		(.*),
 		(.*),
 		(.*) 
-	\) RETURNING \(
+	\) RETURNING 
 		id,
 		first_name,
 		last_name,
@@ -73,8 +74,8 @@ func expectPrepareMock(mock sqlmock.Sqlmock) prepareQueryMock {
 		address,
 		pin,
 		salt,
-		created_at 
-	\)
+		created_at,
+		updated_at
 	`)
 
 	prepareQuery.getUserByID = mock.ExpectPrepare(`
@@ -92,6 +93,18 @@ func expectPrepareMock(mock sqlmock.Sqlmock) prepareQueryMock {
 		users
 	WHERE id = (.*)
 	LIMIT 1
+	`)
+
+	prepareQuery.createWallet = mock.ExpectPrepare(`
+	INSERT INTO wallet \(
+		id,
+		user_id,
+		balance
+	\) VALUES \(
+	 	(.*),
+		(.*),
+		0
+	\)
 	`)
 
 	return prepareQuery

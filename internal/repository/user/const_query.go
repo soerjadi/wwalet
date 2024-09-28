@@ -7,6 +7,7 @@ type prepareQuery struct {
 	getUserByPhoneNumber *sqlx.Stmt
 	updateUser           *sqlx.Stmt
 	registerUser         *sqlx.Stmt
+	createWallet         *sqlx.Stmt
 }
 
 const (
@@ -73,7 +74,7 @@ const (
 		$5,
 		$6,
 		$7 
-	) RETURNING (
+	) RETURNING
 		id,
 		first_name,
 		last_name,
@@ -81,7 +82,19 @@ const (
 		address,
 		pin,
 		salt,
-		created_at 
-	)
+		created_at,
+		updated_at
+	`
+
+	createWallet = `
+	INSERT INTO wallets (
+		id,
+		user_id,
+		balance
+	) VALUES (
+	 	$1,
+		$2,
+		0
+	) RETURNING id
 	`
 )

@@ -23,6 +23,11 @@ func prepareQueries(db *sqlx.DB) (prepareQuery, error) {
 		return q, err
 	}
 
+	q.getUserWallet, err = db.Preparex(getUserWallet)
+	if err != nil {
+		return q, err
+	}
+
 	return q, nil
 }
 

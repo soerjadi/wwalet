@@ -15,6 +15,25 @@ type Transaction struct {
 	CreatedAt     time.Time `json:"created_date"`
 }
 
+type TransactionRequest struct {
+	TargetUserID  string `json:"target_user,omitempty"`
+	Remarks       string `json:"remarks,omitempty"`
+	Amount        int64  `json:"amount"`
+	Category      string `json:"-"`
+	Type          string `json:"-"`
+	BalanceAfter  int64  `json:"-"`
+	BalanceBefore int64  `json:"-"`
+}
+
+type TransactionResult struct {
+	ID            string
+	Amount        int64
+	BalanceAfter  int64
+	BalanceBefore int64
+	Remarks       string
+	CreatedAt     time.Time
+}
+
 type TransactionSingle struct {
 	// define id key on the response
 	TopupID    string `json:"top_up_id,omitempty"`
@@ -82,5 +101,12 @@ func (t Transaction) TransformSingle() TransactionSingle {
 }
 
 func (Transaction) TransformList(data []Transaction) []TransactionList {
-	return nil
+	var result []TransactionList
+
+	for _, d := range data {
+		transformData := d.TransformSingle()
+		result = append(result, transformData)
+	}
+
+	return result
 }

@@ -14,7 +14,9 @@ import (
 
 	"github.com/soerjadi/wwalet/internal/config"
 	"github.com/soerjadi/wwalet/internal/delivery/rest"
-	helloHandler "github.com/soerjadi/wwalet/internal/delivery/rest/helloworld"
+	userHdl "github.com/soerjadi/wwalet/internal/delivery/rest/user"
+	"github.com/soerjadi/wwalet/internal/repository/user"
+	userUcs "github.com/soerjadi/wwalet/internal/usecase/user"
 )
 
 func main() {
@@ -87,10 +89,16 @@ func main() {
 }
 
 func initiateHandler(cfg *config.Config, db *sqlx.DB) ([]rest.API, error) {
+	userRepository, err := user.GetRepository(db)
+	if err != nil {
+		return nil, fmt.Errorf("unable to initiate user repository. err : %v", err)
+	}
 
-	handler := helloHandler.NewHandler()
+	userUsecase := userUcs.GetUsecase(userRepository, cfg)
+
+	userHandler := userHdl.NewHandler(userUsecase, cfg)
 
 	return []rest.API{
-		handler,
+		userHandler,
 	}, nil
 }

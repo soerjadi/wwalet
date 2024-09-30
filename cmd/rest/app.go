@@ -61,7 +61,7 @@ func main() {
 		Handler:      r, // Pass our instance of gorilla/mux in.
 	}
 
-	fmt.Printf("Server running in port : %s", cfg.Server.Port)
+	fmt.Printf("Server running in port : %s\n", cfg.Server.Port)
 
 	// Run our server in a goroutine so that it doesn't block.
 	go func() {

@@ -28,9 +28,9 @@ func (fn HandlerFunc) Serve(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		response.Data = data
-		// response.Message = err.Error()
-		response.Status = "error"
+		// response.Data = data
+		response.Message = err.Error()
+		// response.Status = "error"
 	} else {
 		return
 	}

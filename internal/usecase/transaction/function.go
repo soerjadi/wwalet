@@ -37,12 +37,20 @@ func (u transactionUsecase) Topup(ctx context.Context, req model.TransactionRequ
 	balanceAfter := wallet.Balance + req.Amount
 	req.BalanceBefore = wallet.Balance
 	req.BalanceAfter = balanceAfter
+	req.TargetUserID = userLog.ID
 
 	result, err := u.repository.InsertTransaction(ctx, req)
 
 	if err != nil {
 		return model.TransactionSingle{}, err
 	}
+
+	go func(ctx context.Context) {
+		err = u.repository.UpdateBalance(ctx, req.TargetUserID, balanceAfter)
+		if err != nil {
+			fmt.Printf("error updating balance err : %v\n", err)
+		}
+	}(ctx)
 
 	transform := result.TransformSingle()
 
@@ -64,11 +72,27 @@ func (u transactionUsecase) Payment(ctx context.Context, req model.TransactionRe
 		return model.TransactionSingle{}, errors.New("failed get current user balance")
 	}
 
+	if wallet.Balance < req.Amount {
+		return model.TransactionSingle{}, errors.New("Balance is not enough")
+	}
+
 	balanceAfter := wallet.Balance - req.Amount
 	req.BalanceAfter = balanceAfter
 	req.BalanceBefore = wallet.Balance
+	req.TargetUserID = userLog.ID
 
 	result, err := u.repository.InsertTransaction(ctx, req)
+	if err != nil {
+		return model.TransactionSingle{}, errors.New("failed to insert transaction")
+	}
+
+	go func(ctx context.Context) {
+		err = u.repository.UpdateBalance(ctx, req.TargetUserID, balanceAfter)
+		if err != nil {
+			fmt.Printf("error updating balance err : %v\n", err)
+		}
+	}(ctx)
+
 	transform := result.TransformSingle()
 
 	return transform, nil
@@ -77,6 +101,7 @@ func (u transactionUsecase) Payment(ctx context.Context, req model.TransactionRe
 func (u transactionUsecase) Transfer(ctx context.Context, req model.TransactionRequest) (model.TransactionSingle, error) {
 	req.Category = model.TRANSACTION_CATEGORY_TRANSFER
 	req.Type = model.TRANSACTION_TYPE_DEBIT
+	targetUserID := req.TargetUserID
 
 	var userLog model.User
 	userLogStr := ctx.Value("user-key-respondent")
@@ -92,13 +117,26 @@ func (u transactionUsecase) Transfer(ctx context.Context, req model.TransactionR
 	result, err := u.repository.InsertTransaction(ctx, req)
 	transform := result.TransformSingle()
 
-	// do insert transfer history to target user
-	go func() {
-		req, err = u.transferInternal(ctx, req, req.TargetUserID)
+	go func(ctx context.Context) {
+		err = u.repository.UpdateBalance(ctx, userLog.ID, req.BalanceAfter)
 		if err != nil {
-			fmt.Printf("Got an error calculate transaction history to target user %v\n", err)
+			fmt.Printf("got an error updating balance sender. err : %v\n", err)
 			return
 		}
+	}(ctx)
+
+	// do insert transfer history to target user
+	go func(ctx context.Context) {
+		wallet, err := u.getUserWallet(ctx, req.TargetUserID)
+		if err != nil {
+			fmt.Printf("failed get current user balance, %v", err)
+			return
+		}
+
+		balanceAfter := wallet.Balance + req.Amount
+		req.BalanceAfter = balanceAfter
+		req.BalanceBefore = wallet.Balance
+		req.TargetUserID = targetUserID
 
 		result, err := u.repository.InsertTransaction(ctx, req)
 		if err != nil {
@@ -107,7 +145,13 @@ func (u transactionUsecase) Transfer(ctx context.Context, req model.TransactionR
 		}
 
 		fmt.Printf("successfully insert transactions history to target user %v\n", result)
-	}()
+
+		err = u.repository.UpdateBalance(ctx, targetUserID, balanceAfter)
+		if err != nil {
+			fmt.Printf("got an error updating balance target. err : %v\n", err)
+			return
+		}
+	}(ctx)
 
 	return transform, nil
 }
@@ -118,9 +162,14 @@ func (u transactionUsecase) transferInternal(ctx context.Context, req model.Tran
 		return req, errors.New("failed get current user balance")
 	}
 
+	if wallet.Balance < req.Amount {
+		return req, errors.New("Balance is not enough")
+	}
+
 	balanceAfter := wallet.Balance - req.Amount
 	req.BalanceAfter = balanceAfter
 	req.BalanceBefore = wallet.Balance
+	req.TargetUserID = userID
 
 	return req, nil
 }

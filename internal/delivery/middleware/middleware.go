@@ -85,9 +85,9 @@ func unauthorizedResp(w http.ResponseWriter, r *http.Request) {
 }
 
 func appendToContext(ctx context.Context, reqMap map[string]interface{}) *http.Request {
-	userID := reqMap["userID"]
+	user := reqMap["user"]
 	r := reqMap["req"].(*http.Request)
-	ctx = context.WithValue(ctx, "user-key-respondent", userID)
+	ctx = context.WithValue(ctx, "user-key-respondent", user)
 
 	r = r.WithContext(ctx)
 	return r

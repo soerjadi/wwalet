@@ -37,5 +37,5 @@ func (h *Handler) RegisterRoutes(r *mux.Router) {
 
 	trx := r.PathPrefix("/transactions").Subrouter()
 	trx.Use(middleware.OnlyLoggedInUser(h.userUsecase, h.cfg))
-	trx.HandleFunc("", rest.HandlerFunc(h.transactionList).Serve).Methods(http.MethodPost)
+	trx.HandleFunc("", rest.HandlerFunc(h.transactionList).Serve).Methods(http.MethodGet)
 }

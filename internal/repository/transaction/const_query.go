@@ -20,7 +20,7 @@ const (
 		amount,
 		remarks,
 		balance_before,
-		balance_after
+		balance_after,
 		created_at
 	FROM
 		transactions
@@ -49,7 +49,7 @@ const (
 		$8,
 		$9,
 		NOW()
-	) RETURNING (
+	) RETURNING
 		id,
 		user_id,
 		status,
@@ -60,7 +60,6 @@ const (
 		balance_before,
 		balance_after,
 		created_at
-	)
 	`
 
 	updateBalance = `

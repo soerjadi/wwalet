@@ -3,16 +3,16 @@ package model
 import "time"
 
 type Transaction struct {
-	ID            string    `db:"id" json:"-"`
-	UserID        string    `db:"user_id" json:"user_id"`
-	Status        string    `db:"status" json:"status"`
-	Type          string    `db:"type" json:"transaction_type"`
-	Category      string    `db:"category" json:"-"`
-	Amount        int64     `db:"amount" json:"amount"`
-	Remarks       string    `db:"remarks" json:"remarks,omitempty"`
-	BalanceBefore int64     `db:"balance_before" json:"balance_before"`
-	BalanceAfter  int64     `db:"balance_after" json:"balance_after"`
-	CreatedAt     time.Time `db:"created_at" json:"created_date"`
+	ID            string    `db:"id"`
+	UserID        string    `db:"user_id"`
+	Status        string    `db:"status"`
+	Type          string    `db:"type"`
+	Category      string    `db:"category"`
+	Amount        int64     `db:"amount"`
+	Remarks       string    `db:"remarks"`
+	BalanceBefore int64     `db:"balance_before"`
+	BalanceAfter  int64     `db:"balance_after"`
+	CreatedAt     time.Time `db:"created_at"`
 }
 
 type TransactionRequest struct {
@@ -66,11 +66,11 @@ type TransactionList struct {
 }
 
 const (
-	TRANSACTION_TYPE_DEBIT  = "debit"
-	TRANSACTION_TYPE_CREDIT = "credit"
+	TRANSACTION_TYPE_DEBIT  = "DEBIT"
+	TRANSACTION_TYPE_CREDIT = "CREDIT"
 
-	TRANSACTION_STATUS_SUCCESS = "success"
-	TRANSACTION_STATUS_FAILED  = "failed"
+	TRANSACTION_STATUS_SUCCESS = "SUCCESS"
+	TRANSACTION_STATUS_FAILED  = "FAILED"
 
 	TRANSACTION_CATEGORY_TOPUP    = "topup"
 	TRANSACTION_CATEGORY_PAYMENT  = "payment"
@@ -82,7 +82,7 @@ func (t Transaction) TransformSingle() TransactionSingle {
 		Remarks:       t.Remarks,
 		BalanceAfter:  t.BalanceAfter,
 		BalanceBefore: t.BalanceBefore,
-		CreatedAt:     t.CreatedAt.Format("2006-09-01 22:20:01"),
+		CreatedAt:     t.CreatedAt.Format("2006-01-02 15:04:05"),
 	}
 
 	switch t.Category {
@@ -110,7 +110,7 @@ func (Transaction) TransformList(data []Transaction) []TransactionList {
 			Amount:          d.Amount,
 			BalanceBefore:   d.BalanceBefore,
 			BalanceAfter:    d.BalanceAfter,
-			CreatedAt:       d.CreatedAt.Format("2006-09-01 22:20:21"),
+			CreatedAt:       d.CreatedAt.Format("2006-01-02 15:04:05"),
 		}
 
 		switch d.Category {

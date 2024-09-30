@@ -36,7 +36,7 @@ func (u userUsecase) Register(ctx context.Context, req model.UserRegisterRequest
 		LastName:    res.LastName,
 		PhoneNumber: res.PhoneNumber,
 		Address:     res.Address,
-		CreatedAt:   res.CreatedAt.Format("2006-02-01 22:21:20"),
+		CreatedAt:   res.CreatedAt.Format("2006-01-02 15:04:05"),
 	}, nil
 }
 
@@ -93,7 +93,7 @@ func (u userUsecase) Update(ctx context.Context, req model.UserUpdateRequest) (m
 		FirstName: res.FirstName,
 		LastName:  res.LastName,
 		Address:   res.Address,
-		UpdatedAt: user.UpdatedAt.Time.Format("2006-02-01 22:21:20"),
+		UpdatedAt: user.UpdatedAt.Time.Format("2006-01-02 15:04:05"),
 	}, nil
 }
 

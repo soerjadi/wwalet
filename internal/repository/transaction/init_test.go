@@ -57,7 +57,7 @@ func expectPrepareMock(mock sqlmock.Sqlmock) prepareQueryMock {
 		(.*),
 		(.*),
 		NOW\(\)
-	\) RETURNING \(
+	\) RETURNING
 		id,
 		user_id,
 		status,
@@ -68,7 +68,6 @@ func expectPrepareMock(mock sqlmock.Sqlmock) prepareQueryMock {
 		balance_before,
 		balance_after,
 		created_at
-	\)
 	`)
 
 	prepareQuery.updateBalance = mock.ExpectPrepare(`

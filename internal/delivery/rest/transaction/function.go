@@ -3,6 +3,7 @@ package transaction
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/soerjadi/wwalet/internal/model"
@@ -19,6 +20,7 @@ func (h Handler) topup(w http.ResponseWriter, r *http.Request) (interface{}, err
 
 	result, err := h.usecase.Topup(r.Context(), req)
 	if err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
 
